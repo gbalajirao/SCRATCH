@@ -4,8 +4,10 @@
 #include "stdafx.h"
 #include "malloc.h"
 
-void BuildList(struct node ** head);
+void BuildList(struct node ** );
 void DisplayNode(struct node*);
+void RecursiveReverse(struct node ** );
+struct node* Reverse(struct node ** ,struct node * );
 struct node 
 {
 	int data;
@@ -18,12 +20,37 @@ int _tmain(int argc, _TCHAR* argv[])
 	struct node * head = NULL;
 	BuildList(&head);
 	DisplayNode(head);
-
+	RecursiveReverse(&head);
+	DisplayNode(head);
 
 	int a;
 	scanf_s("adasd",&a);
 	return 0;
 }
+
+void RecursiveReverse(struct node ** head)
+{
+	if(*head!=NULL)
+	{
+		struct node * tail = Reverse(head,*head);
+		tail->Next=NULL;
+	}
+}
+
+struct node* Reverse(struct node ** head,struct node * current)
+{
+	struct node* temp;
+	if(current->Next == NULL)
+		*head = current;
+	else
+	{
+		temp = Reverse(head,current->Next);
+		temp->Next = current;
+	}
+
+	return current;
+}
+
 
 void BuildList(struct node ** head)
 {
