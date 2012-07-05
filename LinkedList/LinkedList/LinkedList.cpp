@@ -3,11 +3,15 @@
 
 #include "stdafx.h"
 #include "malloc.h"
+#include "time.h"
+#include <cstdlib>
+#include <Windows.h>
 
 void BuildList(struct node ** );
 void DisplayNode(struct node*);
 void RecursiveReverse(struct node ** );
 struct node* Reverse(struct node ** ,struct node * );
+void SortedInsert(struct node **,struct node * );
 struct node 
 {
 	int data;
@@ -18,14 +22,27 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	printf("Sample list");
 	struct node * head = NULL;
+
+	// Build linked list with random numbers
 	BuildList(&head);
 	DisplayNode(head);
+
+	// Reverse the linked list
 	RecursiveReverse(&head);
+	DisplayNode(head);
+
+	//Sorted Insert into a new list
 	DisplayNode(head);
 
 	int a;
 	scanf_s("adasd",&a);
 	return 0;
+}
+
+
+void SortedInsert(struct node ** head,struct node * current)
+{
+
 }
 
 void RecursiveReverse(struct node ** head)
@@ -56,10 +73,15 @@ void BuildList(struct node ** head)
 {
 	struct node* current = NULL;
 	struct node* temp = NULL;
+	time_t seconds;
+	printf("\n");
 	for(int i =0;i<10;i++)
 	{
+		Sleep(1000);
+		time(&seconds);
+		srand((unsigned int)seconds);
 		temp = (struct node*)malloc(sizeof(struct node));
-		temp->data = i;
+		temp->data = rand() % 15;
 		if(*head ==NULL)
 		{
 			*head = temp;
@@ -71,7 +93,9 @@ void BuildList(struct node ** head)
 			current = temp;
 			current->Next = NULL;
 		}
+		printf("=");
 	}
+	printf("\n");
 }
 
 void DisplayNode(struct node * head)
