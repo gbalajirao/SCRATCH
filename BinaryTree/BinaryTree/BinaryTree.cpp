@@ -10,6 +10,9 @@ void BuildTree(struct BTree ** );
 void InsertNode(struct BTree** ,struct BTree* );
 void PrintPath(struct BTree* , int* ,int );
 void PrintLeafPath(int*,int);
+int FetchNthElement(struct BTree* ,int );
+void GetNthNode(struct BTree * , int ,int*,int* );
+void InOrderTraversal(struct BTree*);
 struct BTree 
 {
 	int data;
@@ -21,13 +24,65 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	struct BTree* head = NULL;
 	BuildTree(&head);
+	printf_s("\n \n  Root Element is - %d \n \n ",head->data);
+
 	int* a = (int*)malloc(sizeof(int)*10);
 	PrintPath(head,a ,0);
 
+	// Sorted list
+	printf("\n \n Sorted list is \n");
+	InOrderTraversal(head);
+
+	// Get 3rd largest item
+	printf_s("\n \n The 3rd largest number in tree is -  %d \n",  FetchNthElement(head,3));
 	int i;
 	scanf_s("Hit enter %d",&i);
 	return 0;
 }
+
+int FetchNthElement(struct BTree* head,int Nth)
+{
+	if(head==NULL) return 0;
+	int value = MAXINT;
+	int current=0;
+	GetNthNode(head,Nth,&current,&value);
+	return value;
+}
+
+void InOrderTraversal(struct BTree*  head)
+{
+	if(head!=NULL)
+	{
+		InOrderTraversal(head->Left);
+		printf_s(" %d ",head->data);
+		InOrderTraversal(head->Right);
+	}
+}
+
+
+void GetNthNode(struct BTree * head, int Nth,int* current,int* value)
+{
+	if(head->Right!=NULL && *value==MAXINT)
+	{
+		GetNthNode(head->Right,Nth,current,value);
+	}
+
+	if(*value==MAXINT)
+	{
+		(*current)++;
+		//printf_s("\n Walking into %d  -- current %d  Nth %d  value %d \n",head->data,*current,Nth,*value);
+		if(Nth == *current )  
+		{
+			*value = head->data;
+		}
+	}
+
+	if(head->Left!=NULL&&*value==MAXINT)
+	{
+		GetNthNode(head->Left,Nth,current,value);
+	}
+}
+
 
 void BuildTree(struct BTree** head)
 {
