@@ -13,12 +13,83 @@ void PrintLeafPath(int*,int);
 int FetchNthElement(struct BTree* ,int );
 void GetNthNode(struct BTree * , int ,int*,int* );
 void InOrderTraversal(struct BTree*);
+void PrintLevelOrder(struct BTree*);
+int GetHeight(struct BTree*);
 struct BTree 
 {
 	int data;
 	struct BTree* Left;
 	struct BTree* Right;
 };
+
+struct Node 
+{
+	struct BTree* treenode;
+	struct Node* next;
+};
+
+struct Queue
+{
+	struct Node* tail;
+	struct Node* head;
+
+public:
+	Queue()
+	{
+		head=NULL;
+		tail=NULL;
+	}
+
+	void Enqueue(struct BTree* sample)
+	{
+		if(sample!=NULL)
+		{
+			struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+			node->treenode = sample;
+			if(head==NULL)
+			{
+				head=node;
+				tail=node;
+			}
+			else
+			{
+				node->next = head;
+				head=node;
+			}
+		}
+	}
+
+	struct BTree* DeQueue()
+	{
+		if(head==NULL) return NULL;
+		struct BTree* data;
+		struct Node* current = head;
+		data = tail->treenode;
+		if(head!=tail)
+		{
+			while(current->next != tail)
+			{
+				current = current->next;
+			}
+			free(tail);
+			tail = current;
+		}
+		else
+		{
+			free(tail);
+			tail=NULL;
+			head=NULL;
+		}
+		return data;
+	}
+
+	bool IsEmpty()
+	{
+		return (head==NULL);
+	}
+
+};
+
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -28,6 +99,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	int* a = (int*)malloc(sizeof(int)*10);
 	PrintPath(head,a ,0);
+
+	// Print Level Order
+	PrintLevelOrder(head);
 
 	// Sorted list
 	printf("\n \n Sorted list is \n");
@@ -57,6 +131,79 @@ void InOrderTraversal(struct BTree*  head)
 		printf_s(" %d ",head->data);
 		InOrderTraversal(head->Right);
 	}
+}
+
+void PrintLevelOrder(struct BTree* head)
+{
+	printf_s("\n Level Order : \n");
+	int height = GetHeight(head);
+	if(head!=NULL)
+	{
+		Queue* myQueue = (Queue*)malloc(sizeof(Queue));
+		Queue* childQueue = (Queue*)malloc(sizeof(Queue));
+		myQueue->head=NULL;
+		myQueue->tail=NULL;
+		childQueue->head=NULL;
+		childQueue->tail=NULL;
+		myQueue->Enqueue(head);
+		struct BTree dummy;
+		int space=1;
+		for (int i = 1; i < height; i++)
+		{
+			space *= 2;
+		}
+		for (int i = 0; i < space; i++)
+		{
+			printf_s(" ");
+		}
+		while(!myQueue->IsEmpty() || !childQueue->IsEmpty())
+		{
+			if(!myQueue->IsEmpty())
+			{
+				struct BTree*  treenode = myQueue->DeQueue();
+				if(treenode == &dummy)
+					printf_s("  ");
+				else
+				{
+					printf_s("%d ",treenode->data);
+					if(treenode->Left == NULL)
+						childQueue->Enqueue(&dummy);
+					else
+						childQueue->Enqueue(treenode->Left);
+					if(treenode->Right == NULL)
+						childQueue->Enqueue(&dummy);
+					else
+						childQueue->Enqueue(treenode->Right);
+				}
+			}
+			else
+			{
+				printf_s("\n");
+				height--;
+				int space=1;
+				for (int i = 1; i < height; i++)
+				{
+					space *= 2;
+				}
+				for (int i = 0; i < space; i++)
+				{
+					printf_s(" ");
+				}
+				while(!childQueue->IsEmpty())
+					myQueue->Enqueue( childQueue->DeQueue());
+			}
+		}
+	}
+
+	printf_s("\n");
+}
+
+int GetHeight(struct BTree* head)
+{
+	if(head==NULL) return 0;
+	int lHeight = GetHeight(head->Left);
+	int rHeight = GetHeight(head->Right);
+	return (lHeight > rHeight)?lHeight + 1:rHeight + 1;
 }
 
 
